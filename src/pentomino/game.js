@@ -59,8 +59,11 @@ export class PentominoGame {
     }
 
     place_active_piece(hole_index, i, j) {
-        this.holes[hole_index].add_piece(i, j, this.active_piece)
-        this.active_piece = null
-        this.make_pieces()
+        if (this.active_piece) {
+            this.holes[hole_index].add_piece(i, j, this.active_piece)
+            this.active_piece = null
+            this.make_pieces()
+        }
+        
     }
 }

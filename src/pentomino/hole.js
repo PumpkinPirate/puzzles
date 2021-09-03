@@ -3,6 +3,7 @@ import _ from 'lodash'
 var min_width = 6
 var max_width = 8
 var max_height = 10
+var border = 2
 
 function random_rows(total, h=max_height)
 {
@@ -39,12 +40,23 @@ export class PentominoHole {
     static random(size) {
         var rows = random_rows(size * 5)
         var shape = []
+        var width = max_width+2*border
+
+        for (let i=0; i<border; i++) {
+            shape.push(_.times(width, _.constant(0)))
+        }
+
         for (var r of rows) {
             let offset = _.random(max_width - r)
-            let row = _.times(max_width, _.constant(0))
-            row = _.fill(row, 1, offset, offset+r)
+            let row = _.times(width, _.constant(0))
+            row = _.fill(row, 1, offset+border, offset+border+r)
             shape.push(row)
         }
+
+        for (let i=0; i<border; i++) {
+            shape.push(_.times(width, _.constant(0)))
+        }
+
         return new PentominoHole(shape, size)
     }
 }

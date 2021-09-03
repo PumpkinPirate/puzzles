@@ -77,7 +77,6 @@ export default {
         }
         var i = e.target.dataset.i
         var j = e.target.dataset.j
-        console.log(e.target)
         this.game.place_active_piece(hole_index, i, j)
       }
   }
