@@ -1,5 +1,7 @@
 import _ from 'lodash'
 
+import {Shape} from './shape.js'
+
 var pieces = [
     {
         name: "P1",
@@ -82,8 +84,9 @@ var pieces = [
         name: "W",
         weight: 4*2,
         shape: [
-            [1,1,1,0],
-            [0,0,1,1]
+            [1,0,0],
+            [1,1,0],
+            [0,1,1]
         ]
     },
     {
@@ -150,13 +153,9 @@ var pieces = [
 
 var total_weight = pieces.map(p => p.weight).reduce((t,w)=>t+w, 0)
 
-function empty_shape(h, w) {
-    return _.times(h, () => _.times(w, _.constant(0)))
-}
-
 export class PentominoPiece {
     constructor(shape, name) {
-        this.shape = _.cloneDeep(shape)
+        this.shape = Shape.from_grid(shape)
         this.name = name
         this.horizontal = true
     }
@@ -170,33 +169,18 @@ export class PentominoPiece {
     }
 
     rot_cw() {
-        var new_height = this.width
-        var new_width = this.height
-        var new_shape = empty_shape(new_height, new_width)
-        for (var i of _.range(new_height)) {
-            for (var j of _.range(new_width)) {
-                new_shape[i][j] = this.shape[new_width-j-1][i]
-            }
-        }
-        this.shape = new_shape
+        this.shape.rot_cw()
         this.horizontal = !this.horizontal
     }
 
     rot_ccw() {
-        var new_height = this.width
-        var new_width = this.height
-        var new_shape = empty_shape(new_height, new_width)
-        for (var i of _.range(new_height)) {
-            for (var j of _.range(new_width)) {
-                new_shape[i][j] = this.shape[j][new_height-i-1]
-            }
-        }
-        this.shape = new_shape
+        this.shape.rot_ccw()
         this.horizontal = !this.horizontal
+        
     }
 
     flip() {
-        this.shape = this.shape.map(_.reverse)
+        this.shape.flip()
     }
 
     static random() {

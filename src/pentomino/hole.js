@@ -1,9 +1,11 @@
-import _ from 'lodash'
+import _, { range } from 'lodash'
 
-var min_width = 6
-var max_width = 8
-var max_height = 10
-var border = 2
+import {Shape} from './shape.js'
+
+const min_width = 6
+const max_width = 8
+const max_height = 10
+const timer_start = 8
 
 function random_rows(total, h=max_height)
 {
@@ -14,7 +16,7 @@ function random_rows(total, h=max_height)
         return [total]
     }
     else {
-        var choices = _.shuffle(_.range(min_width, max_width+1))
+        var choices = _.shuffle(range(min_width, max_width+1))
         for (var i of choices) {
             var rows = random_rows(total - i, h-1)
             if (rows) {
@@ -31,32 +33,73 @@ export class PentominoHole {
         this.shape = shape
         this.size = size
         this.pieces = []
+        this.timer = timer_start
+        this.moves = 0
+    }
+
+    can_place(i, j, piece) {
+        if (!piece) {
+            return false
+        }
+        return this.remaining_shape().overlaps(piece.shape, [i,j])
     }
 
     add_piece(i, j, piece) {
         this.pieces.push({ i, j, piece })
+        this.timer = timer_start
+        this.moves = this.moves + 1
+    }
+
+    piece_warning() {
+        if (this.pieces.length && this.timer <= 2) {
+            return this.timer
+        }
+        return 0
+    }
+
+    hole_warning() {
+        if (this.pieces.length == 0 && this.timer <= 3) {
+            return this.timer
+        }
+        return 0
+    }
+
+    step_timer() {
+        this.timer = this.timer - 1
+        if (this.timer <= 0) {
+            if (this.pieces.length) {
+                this.pieces.pop()
+            }
+            else {
+                var i = _.random(this.shape.i_min(), this.shape.i_max())
+                var j = _.random(1) ? this.shape.j_min(i) - 1 : this.shape.j_max(i) + 1
+                this.shape.add([i,j])
+            }
+            this.timer = timer_start
+        }
+    }
+
+    remaining_shape() {
+        var remaining = this.shape
+        for (var {piece, i, j} of this.pieces) {
+            remaining = remaining.difference(piece.shape, [i,j])
+        }
+        return remaining
+    }
+
+    filled() {
+        return this.remaining_shape().empty()
     }
 
     static random(size) {
         var rows = random_rows(size * 5)
-        var shape = []
-        var width = max_width+2*border
+        var squares = []
 
-        for (let i=0; i<border; i++) {
-            shape.push(_.times(width, _.constant(0)))
-        }
-
-        for (var r of rows) {
+        _.forEach(rows, (r, i) => {
             let offset = _.random(max_width - r)
-            let row = _.times(width, _.constant(0))
-            row = _.fill(row, 1, offset+border, offset+border+r)
-            shape.push(row)
-        }
+            squares.push(..._.map(range(r), j=>[i, j+offset]))
+        })
 
-        for (let i=0; i<border; i++) {
-            shape.push(_.times(width, _.constant(0)))
-        }
-
-        return new PentominoHole(shape, size)
+        return new PentominoHole(new Shape(squares), size)
     }
 }
