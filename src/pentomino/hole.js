@@ -30,6 +30,7 @@ function random_rows(total, h=max_height)
 
 export class PentominoHole {
     constructor(shape, size) {
+        this.id = _.uniqueId("hole")
         this.shape = shape
         this.size = size
         this.pieces = []
@@ -37,15 +38,15 @@ export class PentominoHole {
         this.moves = 0
     }
 
-    can_place(i, j, piece) {
+    can_place(x, y, piece) {
         if (!piece) {
             return false
         }
-        return this.remaining_shape().overlaps(piece.shape, [i,j])
+        return this.remaining_shape().overlaps(piece.shape, [x,y])
     }
 
-    add_piece(i, j, piece) {
-        this.pieces.push({ i, j, piece })
+    add_piece(x, y, piece) {
+        this.pieces.push({ x, y, piece })
         this.timer = timer_start
         this.moves = this.moves + 1
     }
@@ -71,9 +72,9 @@ export class PentominoHole {
                 this.pieces.pop()
             }
             else {
-                var i = _.random(this.shape.i_min(), this.shape.i_max())
-                var j = _.random(1) ? this.shape.j_min(i) - 1 : this.shape.j_max(i) + 1
-                this.shape.add([i,j])
+                var y = _.random(this.shape.y_min(), this.shape.y_max())
+                var x = _.random(1) ? this.shape.x_min(y) - 1 : this.shape.x_max(y) + 1
+                this.shape.add([x,y])
             }
             this.timer = timer_start
         }
@@ -81,8 +82,8 @@ export class PentominoHole {
 
     remaining_shape() {
         var remaining = this.shape
-        for (var {piece, i, j} of this.pieces) {
-            remaining = remaining.difference(piece.shape, [i,j])
+        for (var {piece, x, y} of this.pieces) {
+            remaining = remaining.difference(piece.shape, [x,y])
         }
         return remaining
     }
@@ -95,9 +96,9 @@ export class PentominoHole {
         var rows = random_rows(size * 5)
         var squares = []
 
-        _.forEach(rows, (r, i) => {
+        _.forEach(rows, (r, y) => {
             let offset = _.random(max_width - r)
-            squares.push(..._.map(range(r), j=>[i, j+offset]))
+            squares.push(..._.map(range(r), x=>[x+offset, y]))
         })
 
         return new PentominoHole(new Shape(squares), size)

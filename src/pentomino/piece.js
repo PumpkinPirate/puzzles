@@ -42,24 +42,24 @@ var pieces = [
         name: "Y",
         weight: 14*2,
         shape: [
-            [1,1,1,1],
-            [0,1,0,0]
+            [0,0,1,0],
+            [1,1,1,1]
         ]
     },
     {
         name: "N",
         weight: 8*2,
         shape: [
-            [1,1,1,0],
-            [0,0,1,1]
+            [0,0,1,1],
+            [1,1,1,0]
         ]
     },
     {
         name: "L",
         weight: 8*2,
         shape: [
-            [1,1,1,1],
-            [0,0,0,1]
+            [0,0,0,1],
+            [1,1,1,1]
         ]
     },
     {
@@ -103,7 +103,7 @@ var pieces = [
         weight: 4,
         shape: [
             [1,1],
-            [1,0],
+            [0,1],
             [1,1]
         ]
     },
@@ -155,7 +155,7 @@ var total_weight = pieces.map(p => p.weight).reduce((t,w)=>t+w, 0)
 
 export class PentominoPiece {
     constructor(shape, name) {
-        this.shape = Shape.from_grid(shape)
+        this.shape = Shape.from_grid(shape, [-Math.floor(shape[0].length / 2), -Math.floor(shape.length/2)])
         this.name = name
         this.horizontal = true
     }

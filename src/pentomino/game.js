@@ -5,7 +5,7 @@ import { PentominoHole } from './hole.js'
 
 export class PentominoGame {
     constructor() {
-        this.hole_size = 4
+        this.hole_size = 10
         this.holes = [null, null, null, null]
         this.pieces = [null, null, null]
         this.active_piece = null
@@ -64,10 +64,10 @@ export class PentominoGame {
         }
     }
 
-    place_active_piece(hole_index, i, j) {
+    place_active_piece(hole_index, x, y) {
         var hole = this.holes[hole_index]
-        if (hole.can_place(i,j, this.active_piece)) {
-            hole.add_piece(i, j, this.active_piece)
+        if (hole.can_place(x, y, this.active_piece)) {
+            hole.add_piece(x, y, this.active_piece)
             this.active_piece = null
             this.make_pieces()
 
