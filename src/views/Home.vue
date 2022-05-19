@@ -1,17 +1,11 @@
 <template>
   <div class="home">
-    <PentominoBoard />
+    <ul>
+      <li><RouterLink to="/pentomino">Pentomino</RouterLink></li>
+      <li><RouterLink to="/cooling">Cooling</RouterLink></li>
+    </ul>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import PentominoBoard from '@/components/PentominoBoard.vue'
-
-export default {
-  name: 'Home',
-  components: {
-    PentominoBoard
-  }
-}
 </script>

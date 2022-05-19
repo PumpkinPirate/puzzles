@@ -14,11 +14,21 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+  },
+  {
+    path: '/pentomino',
+    name: 'Pentomino',
+    component: () => import(/* webpackChunkName: "pentomino" */ '../views/Pentomino.vue')
+  },
+  {
+    path: '/cooling',
+    name: 'Cooling',
+    component: () => import(/* webpackChunkName: "cooling" */ '../views/Cooling.vue')
+  },
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 
