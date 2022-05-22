@@ -9,6 +9,10 @@ export class CoolingPiece {
         this.heat = heat
     }
 
+    score() {
+        return 3 - this.heat
+    }
+
     static random() {
         
         return new CoolingPiece(_.sample(pieceKinds), 3)

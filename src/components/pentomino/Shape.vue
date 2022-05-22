@@ -1,5 +1,5 @@
 <template>
-    <g class="shape" pointer-events="all">
+    <g class="shape">
         <polygon v-for="path, i in outline" :points="path" :key="i" v-bind="$attrs">
             <slot />
         </polygon>

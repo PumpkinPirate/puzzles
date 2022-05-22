@@ -7,15 +7,15 @@ let _locTable = []
 function loc(u, v) {
     // Return a canonical reference to the array [u, v] so that locations can be 
     // compared for equality and used in sets.
-    console.log(`Loc ${u} ${v}`)
+    //console.log(`Loc ${u} ${v}`)
     for (const i of _.range(_locTable.length, u+1, 1)) {
         _locTable[i] = []
-        console.log(`Row ${i}`)
+        //console.log(`Row ${i}`)
     }
 
     for (const i of _.range(_locTable[u].length, v+1, 1)) {
         _locTable[u][i] = [u, i]
-        console.log(`Cell ${u} ${i}`)
+        //console.log(`Cell ${u} ${i}`)
     }
 
     return _locTable[u][v]
@@ -26,15 +26,17 @@ export class CoolingGame {
         this.width = 6
         this.height = 10
         this.maxGroup = 6
-        this.score = 0
-        this.combo = 0
-        this.board = []
+        this.scoreDecay = 0.5
+
+        this.lastScore = 0
+        this.averageScore = null
         this.messages = []
+        this.board = []
     }
 
     start() {
-        this.score = 0
-        this.combo = 0
+        this.lastScore = 0
+        this.averageScore = null
         this.messages = []
 
         this.fillBoard()
@@ -52,17 +54,16 @@ export class CoolingGame {
         this.coolBoard()
     }
 
-    rotateChain(chain) {
+    boardScore() {
+        return _.sumBy(this.board, row => _.sumBy(row, piece => piece.score()))
+    }
+    
+    rotateChain(chain, rotation) {
         //TODO: Verify chain is valid
-        let [u0, v0] = chain[0]
-        let next_piece = this.board[u0][v0]
-        for (let i of _.range(1, chain.length)) {
-            let [u, v] = chain[i]
-            let last_piece = next_piece
-            next_piece = this.board[u][v]
-            this.board[u][v] = last_piece
+        let chainPieces = chain.map(([u,v]) => ({u, v, piece: this.pieceAt([u,v], chain, rotation)}))
+        for (const {u, v, piece} of chainPieces) {
+            this.board[u][v] = piece
         }
-        this.board[u0][v0] = next_piece
 
         this.coolBoard()
         this.newRow()
@@ -86,8 +87,17 @@ export class CoolingGame {
         return neighbors
     }
 
-    pieceAt([i,j]) {
-        return this.board[i][j]
+    pieceAt([u,v], chain=[], rotation=0) {
+        chain = chain.map(([u1,v1]) => loc(u1,v1))
+        let l = loc(u,v)
+        let i = chain.indexOf(l)
+        if (i == -1 || !rotation) {
+            return this.board[u][v]
+        }
+        
+        let l2 = chain.at((i - rotation) % chain.length)
+        let [u2, v2] = l2
+        return this.board[u2][v2]
     }
 
     coolBoard() {
@@ -133,10 +143,20 @@ export class CoolingGame {
     }
 
     newRow() {
-        this.board.shift()
+        this.score(this.board.shift())
         this.board.push(_.map(
             _.range(this.width),
             () => CoolingPiece.random()
         ))
+    }
+
+    score(row) {
+        this.lastScore = _.sumBy(row, piece => piece.score())
+        if (this.averageScore === null) {
+            this.averageScore = this.lastScore
+        }
+        else {
+            this.averageScore = this.averageScore * (1-this.scoreDecay) + this.lastScore * this.scoreDecay
+        }
     }
 }

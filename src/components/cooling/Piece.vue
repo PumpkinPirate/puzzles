@@ -1,16 +1,13 @@
 <template>
-    <g pointer-events="all">
+    <g pointer-events="none">
         <circle cx="0" cy="0" r="1.3" :fill="fill()" />
-        <rect x="-1.4" y="-1.4" width="2.8" height="2.8" :stroke="stroke()" stroke-width="0.2" fill="none" /> 
-        <text x="-0.5" y="0.7" fill="white">{{piece.heat}}</text>
+        <text x="-0.5" y="0.7" fill="white">{{piece.score()}}</text>
     </g>
 </template>
 
 <script setup>
 const props = defineProps({
     piece: Object,
-    active: Boolean,
-    first: Boolean,
 })
 
 function fill() {
@@ -21,18 +18,6 @@ function fill() {
         'D': 'orange',
         'E': 'cyan',
     }[props.piece.kind]
-}
-
-function stroke() {
-    if (props.first) {
-        return "black"
-    }
-    else if (props.active) {
-        return "silver"
-    }
-    else {
-        return "none"
-    }
 }
 </script>
 

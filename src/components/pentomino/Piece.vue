@@ -3,7 +3,6 @@
         <Shape :shape="piece.shape" fill="brown" stroke="black" stroke-width="0.2">
             <slot />
         </Shape>
-
     </g>
 </template>
 
