@@ -1,24 +1,29 @@
 <template>
     <div class="wrapper">
         <button @click="generate">Generate</button>
-        <p>{{ piece.name }}</p>
+        <p v-for="piece, i in pieces" @click="remove(i)">{{ piece.name }}</p>
     </div>
 </template>
 
 <script>
+import { remove } from "@vue/shared"
 import { random } from "/src/shield/piece.js"
 
 export default {
     name: 'ShieldBoard',
     data() {
         return {
-            piece: {name: ''}
+            pieces: []
         }
     },
 
     methods: {
         generate () {
-            this.piece = random()
+            this.pieces.unshift(random())
+        },
+
+        remove (i) {
+            this.pieces.splice(i, 1)
         }
     }
 }
