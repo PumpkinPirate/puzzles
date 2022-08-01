@@ -4,6 +4,7 @@
         <p>Last: {{ game.lastScore }}</p>
         <p>Avg: {{ game.averageScore }}</p>
         <p>Board: {{ game.boardScore() }}</p>
+        {{ msg }}
       </div>
     <div class="wrapper">
       <svg class="puzzle-board cooling-board"
@@ -17,8 +18,9 @@
           <g v-for="{i, j, piece} of pieces()" :key="piece.id" class="piece-container">
             <Cell :active="findInChain(i, j) >= 0" :first="findInChain(i, j) == 0"
                 :style="cellTransformStyle(i, j)"
-                @click="clickPiece(i, j)"
-                @mouseenter="mouseoverPiece(i, j)" />
+                @pointerdown.prevent="pointerDown($event, i, j)"
+                @pointermove="pointerOver(i, j)"
+                @pointerup="pointerUp(i,j)"/>
             <Piece :piece="piece"
                    style="transition: transform 0.5s;"
                    :style="cellTransformStyle(i, j)"/>
@@ -39,6 +41,7 @@ import { routerViewLocationKey } from 'vue-router';
 let game = reactive(new CoolingGame())
 let chain = ref([])
 let rotation =ref(null)
+let msg = ref("")
 
 function start() {
   game.start()
@@ -63,6 +66,33 @@ function findInChain(i, j) {
 
 function cellTransformStyle(i, j) {
   return `transform: translate(${4.5 + 3*j}px, ${4.5 + 3*i}px)`
+}
+
+function pointerDown(e, i, j) {
+  e.target.releasePointerCapture(e.pointerId)
+  startChain(i,j)
+}
+
+function pointerOver(i, j) {
+  if (rotation.value !== null) {
+    setRotation(i, j)
+  }
+  else if (findInChain(i, j) == 0 && chain.value.length > 2) {
+    finishChain()
+  }
+  else if (chain.value.length) {
+    continueChain(i, j)
+  }
+}
+
+function pointerUp(i, j) {
+  let chainIndex = findInChain(i, j)
+  if (rotation.value && chainIndex >= 0) {
+    doRotation()
+  }
+  else {
+    cancelChain()
+  }
 }
 
 function clickPiece(i, j) {
@@ -92,6 +122,7 @@ function mouseoverPiece(i, j) {
 
 function startChain(i,j) {
   chain.value = [[i,j]]
+  rotation.value = null
 }
 
 function continueChain(i, j) {

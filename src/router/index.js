@@ -25,6 +25,11 @@ const routes = [
     name: 'Cooling',
     component: () => import(/* webpackChunkName: "cooling" */ '../views/Cooling.vue')
   },
+  {
+    path: '/shield',
+    name: 'Shield',
+    component: () => import(/* webpackChunkName: "shield" */ '../views/Shield.vue')
+  },
 ]
 
 const router = createRouter({
