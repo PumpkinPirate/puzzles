@@ -1,7 +1,10 @@
 <template>
     <div class="wrapper">
         <button @click="generate">Generate</button>
-        <p v-for="piece, i in pieces" @click="remove(i)">{{ piece.name }}</p>
+        <p v-for="piece, i in pieces" @click="remove(i)">
+            {{ piece.name }}
+            <img :src="piece.image" class="piece">
+        </p>
     </div>
 </template>
 
@@ -37,5 +40,11 @@ export default {
     left: 1em;
     right: 1em;
     bottom: 1em;
+}
+
+.piece {
+    max-width: 100px;
+    max-height: 100px;
+    vertical-align: middle;
 }
 </style>
